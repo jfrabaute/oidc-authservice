@@ -38,10 +38,11 @@ type config struct {
 	UserIDPrefix string `split_words:"true" envconfig:"USERID_PREFIX"`
 
 	// IDToken
-	UserIDClaim string `split_words:"true" default:"email" envconfig:"USERID_CLAIM"`
-	GroupsClaim string `split_words:"true" default:"groups"`
-	TokenHeader string `split_words:"true" default:"Authorization"`
-	TokenScheme string `split_words:"true" default:"Bearer"`
+	UserIDClaim   string `split_words:"true" default:"email" envconfig:"USERID_CLAIM"`
+	GroupsClaim   string `split_words:"true" default:"groups"`
+	TokenHeader   string `split_words:"true" default:"Authorization"`
+	TokenScheme   string `split_words:"true" default:"Bearer"`
+	IDTokenHeader string `split_words:"true" default:"Authorization" envconfig:"ID_TOKEN_HEADER"`
 
 	// GCP Auth
 	GCPHeader string `split_words:"true" default:"Authorization" envconfig:"GCP_HEADER"`

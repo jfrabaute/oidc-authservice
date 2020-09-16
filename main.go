@@ -212,6 +212,15 @@ func main() {
 		}
 	}
 
+	idTokenAuthenticator := &idTokenAuthenticator{
+		header:      c.IDTokenHeader,
+		caBundle:    caBundle,
+		provider:    provider,
+		clientID:    c.ClientID,
+		userIDClaim: c.UserIDClaim,
+		groupsClaim: c.GroupsClaim,
+	}
+
 	// Set the server values.
 	// The isReady atomic variable should protect it from concurrency issues.
 
@@ -237,7 +246,7 @@ func main() {
 		sessionDomain:           c.SessionDomain,
 		authHeader:              c.AuthHeader,
 		caBundle:                caBundle,
-		authenticators:          []Authenticator{sessionAuthenticator, gcpAuthenticator},
+		authenticators:          []Authenticator{sessionAuthenticator, gcpAuthenticator, idTokenAuthenticator},
 		authorizers:             []Authorizer{groupsAuthorizer},
 	}
 	switch c.SessionSameSite {
