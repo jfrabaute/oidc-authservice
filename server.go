@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/arrikto/oidc-authservice/state"
+
 	oidc "github.com/coreos/go-oidc"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
@@ -46,6 +48,7 @@ type server struct {
 	upstreamHTTPHeaderOpts  httpHeaderOpts
 	caBundle                []byte
 	sessionSameSite         http.SameSite
+	newState                state.StateFunc
 }
 
 // jwtClaimOpts specifies the location of the user's identity inside a JWT's
@@ -141,8 +144,8 @@ func (s *server) authCodeFlowAuthenticationRequest(w http.ResponseWriter, r *htt
 	logger := loggerForRequest(r)
 
 	// Initiate OIDC Flow with Authorization Request.
-	state := newState(r.URL.String())
-	id, err := state.save(s.store)
+	reqState := s.newState(r)
+	id, err := reqState.Save(s.store)
 	if err != nil {
 		logger.Errorf("Failed to save state in store: %v", err)
 		returnMessage(w, http.StatusInternalServerError, "Failed to save state in store.")
@@ -176,7 +179,7 @@ func (s *server) callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If state is loaded, then it's correct, as it is saved by its id.
-	state, err := load(s.store, stateID)
+	reqState, err := state.Load(s.store, stateID)
 	if err != nil {
 		logger.Errorf("Failed to retrieve state from store: %v", err)
 		returnMessage(w, http.StatusInternalServerError, "Failed to retrieve state.")
@@ -258,7 +261,7 @@ func (s *server) callback(w http.ResponseWriter, r *http.Request) {
 	logger.Info("Login validated with ID token, redirecting.")
 
 	// Getting original destination from DB with state
-	var destination = state.origURL
+	var destination = reqState.OrigURL
 	if s.afterLoginRedirectURL != "" {
 		destination = s.afterLoginRedirectURL
 	}

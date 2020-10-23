@@ -5,7 +5,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -70,22 +69,6 @@ func returnJSONMessage(w http.ResponseWriter, statusCode int, jsonMsg interface{
 
 func deleteCookie(w http.ResponseWriter, name string) {
 	http.SetCookie(w, &http.Cookie{Name: name, MaxAge: -1, Path: "/"})
-}
-
-func createNonce(length int) (string, error) {
-	// XXX: To avoid modulo bias, 256 / len(nonceChars) MUST equal 0.
-	// In this case, 256 / 64 = 0. See:
-	// https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/
-	const nonceChars = "abcdefghijklmnopqrstuvwxyz:ABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789"
-	nonce := make([]byte, length)
-	if _, err := rand.Read(nonce); err != nil {
-		return "", err
-	}
-	for i := range nonce {
-		nonce[i] = nonceChars[int(nonce[i])%len(nonceChars)]
-	}
-
-	return string(nonce), nil
 }
 
 func setTLSContext(ctx context.Context, caBundle []byte) context.Context {
