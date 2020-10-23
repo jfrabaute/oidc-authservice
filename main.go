@@ -10,6 +10,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/arrikto/oidc-authservice/state"
+
 	"github.com/boltdb/bolt"
 	oidc "github.com/coreos/go-oidc"
 	"github.com/gorilla/handlers"
@@ -187,6 +189,14 @@ func main() {
 		// Use Lax mode as the default
 		s.sessionSameSite = http.SameSiteLaxMode
 	}
+
+	s.newState = state.NewStateFunc(
+		&state.Config{
+			SessionDomain: c.SessionDomain,
+			SchemeDefault: c.SchemeDefault,
+			SchemeHeader:  c.SchemeHeader,
+		},
+	)
 
 	// Setup complete, mark server ready
 	isReady.Set()
