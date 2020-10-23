@@ -1,12 +1,41 @@
-package main
+// Copyright © 2019 Arrikto Inc.  All Rights Reserved.
+
+package state
 
 import (
-	"fmt"
+	"net/http/httptest"
+	"reflect"
 	"testing"
 
+	"github.com/quasoft/memstore"
 	"gonum.org/v1/gonum/stat"
 	"gonum.org/v1/gonum/stat/distuv"
 )
+
+// XXX add test for SchemeAndHost
+
+func TestSaveLoadRelativeURL(t *testing.T) {
+	store := memstore.NewMemStore([]byte("randomstring"))
+	r := httptest.NewRequest("GET", "https://example.com/", nil)
+	reqState := relativeURL(r)
+
+	// Check that save works with no errors
+	id, err := reqState.Save(store)
+	if err != nil {
+		t.Fatalf("Unexpected error while saving: %+v", err)
+	}
+
+	// Check that load works with no errors
+	loadedState, err := Load(store, id)
+	if err != nil {
+		t.Fatalf("Unexpected error while loading: %+v", err)
+	}
+
+	if !reflect.DeepEqual(loadedState, reqState) {
+		t.Fatalf("Saved state and Loaded state and not equal. Got: '%v' ; Want: '%v'",
+			loadedState, reqState)
+	}
+}
 
 func TestCreateNonce_Simple(t *testing.T) {
 
@@ -43,7 +72,7 @@ func TestCreateNonce_Distribution(t *testing.T) {
 		distribution[nonceChar]++
 	}
 	for k, v := range distribution {
-		fmt.Printf("%v: %v\n", k, v)
+		t.Logf("%v: %v\n", k, v)
 	}
 
 	// 1. Calculate the χ² statistic, a normalized sum of squared deviations
