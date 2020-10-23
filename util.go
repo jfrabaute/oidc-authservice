@@ -18,10 +18,14 @@ import (
 	"k8s.io/apiserver/pkg/authentication/user"
 )
 
+// XXX Could be moved state package and be different depending
+// on relativeURL vs schemeAndHost
 func loggerForRequest(r *http.Request) *log.Entry {
 	return log.WithContext(r.Context()).WithFields(log.Fields{
-		"ip":      getUserIP(r),
-		"request": r.URL.String(),
+		"ip":     getUserIP(r),
+		"host":   r.Host,
+		"path":   r.URL.String(),
+		"method": r.Method,
 	})
 }
 
