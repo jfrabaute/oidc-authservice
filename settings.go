@@ -51,6 +51,7 @@ type config struct {
 	SessionMaxAge      int    `split_words:"true" default:"86400"`
 	SessionSameSite    string `split_words:"true" default:"Lax"`
 	SessionDomain      string `split_words:"true"`
+	SchemeDefault      string `split_words:"true"`
 
 	// Site
 	ClientName          string            `split_words:"true" default:"AuthService"`
