@@ -150,7 +150,17 @@ func main() {
 		oauth2Config:            oauth2Config,
 	}
 
-	groupsAuthorizer := newGroupsAuthorizer(c.GroupsAllowlist)
+	// XXX decide if I want to have both authorizers or maybe fold functionality of GroupsAuthorizaer
+	//     into the ConfigAuthorizer
+	var groupsAuthorizer Authorizer
+	if c.AuthzConfigPath != "" {
+		log.Infof("config path exists path=%s", c.AuthzConfigPath)
+		groupsAuthorizer = newConfigAuthorizer(c.AuthzConfigPath)
+	} else {
+		log.Info("NO CONFIG EXISTS!!!!")
+		groupsAuthorizer = newGroupsAuthorizer(c.GroupsAllowlist)
+
+	}
 
 	// Set the server values.
 	// The isReady atomic variable should protect it from concurrency issues.

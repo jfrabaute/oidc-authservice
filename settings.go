@@ -61,6 +61,7 @@ type config struct {
 
 	// Authorization
 	GroupsAllowlist []string `split_words:"true" default:"*"`
+	AuthzConfigPath string   `split_words:"true"`
 }
 
 func parseConfig() (*config, error) {
