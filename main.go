@@ -150,7 +150,15 @@ func main() {
 		oauth2Config:            oauth2Config,
 	}
 
-	groupsAuthorizer := newGroupsAuthorizer(c.GroupsAllowlist)
+	// XXX decide if I want to have both authorizers or maybe fold functionality of GroupsAuthorizaer
+	//     into the ConfigAuthorizer
+	var groupsAuthorizer Authorizer
+	if c.AuthzConfigPath != "" {
+		groupsAuthorizer = newConfigAuthorizer(c.AuthzConfigPath)
+	} else {
+		groupsAuthorizer = newGroupsAuthorizer(c.GroupsAllowlist)
+
+	}
 
 	idTokenAuthenticator := &idTokenAuthenticator{
 		header:      c.IDTokenHeader,
