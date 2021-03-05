@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v3"
 
 	"k8s.io/apiserver/pkg/authentication/user"
@@ -99,7 +100,7 @@ func newConfigAuthorizer(configPath string) Authorizer {
 		}
 	}
 
-	fmt.Printf("loaded config: %+v", *authzConfig)
+	log.Infof("loaded config: %+v", *authzConfig)
 
 	// TODO inotify stuff, maybe just spawn a goroutine here.
 	// wanna make sure to stop it gracefully
@@ -130,15 +131,24 @@ func (ca *configAuthorizer) parseConfig(path string) (*AuthzConfig, error) {
 func (ca *configAuthorizer) Authorize(r *http.Request, userinfo user.Info) (bool, string, error) {
 	host := r.Host
 
-	rule, ok := ca.config.Rules[host]
-	// no rule exists for the host, allow the request
+	allowedGroups, ok := ca.groupMatcher[host]
+	// no groups specified for the host, allow the request
 	if !ok {
+		// TODO make this default behavior configurable
 		return true, "", nil
 	}
 	for _, g := range userinfo.GetGroups() {
-		if _, allowed := rule.groupMatcher[g]; allowed {
+		if _, allowed := allowedGroups[g]; allowed {
+			log.Infof("authorization success: host=%s user=%s matchedGroup=%s ", host, userinfo, g)
 			return true, "", nil
 		}
 	}
-	return false, "User not authorized: access to host %q requires membership in one of ([%s])", nil
+	// XXX think about how to better have groupMatcher + list available to print
+	// consider in relation to reloading the authzConfig.
+	// or do some async update?
+	// do we update config + matcher atomically
+	// XXX where to syncronhize with mutex?
+	groupsList := ca.config.Rules[host].Groups
+	reason := fmt.Sprintf("User not authorized: access to host %q requires membership in one of ([%s])", host, strings.Join(groupsList, ","))
+	return false, reason, nil
 }

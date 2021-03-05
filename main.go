@@ -154,8 +154,10 @@ func main() {
 	//     into the ConfigAuthorizer
 	var groupsAuthorizer Authorizer
 	if c.AuthzConfigPath != "" {
+		log.Infof("config path exists path=%s", c.AuthzConfigPath)
 		groupsAuthorizer = newConfigAuthorizer(c.AuthzConfigPath)
 	} else {
+		log.Info("NO CONFIG EXISTS!!!!")
 		groupsAuthorizer = newGroupsAuthorizer(c.GroupsAllowlist)
 
 	}
