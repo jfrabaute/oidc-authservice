@@ -23,7 +23,6 @@ import (
 	"golang.org/x/oauth2"
 	fsnotify "gopkg.in/fsnotify/fsnotify.v1"
 	"k8s.io/apiserver/pkg/authentication/authenticator"
-	clientconfig "sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 // Issue: https://github.com/gorilla/sessions/issues/200
@@ -129,16 +128,6 @@ func main() {
 		log.Fatalf("Error creating session store: %v", err)
 	}
 
-	// Get Kubernetes authenticator
-	restConfig, err := clientconfig.GetConfig()
-	if err != nil {
-		log.Fatalf("Error getting K8s config: %v", err)
-	}
-	k8sAuthenticator, err := newKubernetesAuthenticator(restConfig, c.Audiences)
-	if err != nil {
-		log.Fatalf("Error creating K8s authenticator: %v", err)
-	}
-
 	// Get OIDC Session Authenticator
 	oauth2Config := &oauth2.Config{
 		ClientID:     c.ClientID,
@@ -238,7 +227,7 @@ func main() {
 		sessionDomain:           c.SessionDomain,
 		authHeader:              c.AuthHeader,
 		caBundle:                caBundle,
-		authenticators:          []authenticator.Request{sessionAuthenticator, k8sAuthenticator},
+		authenticators:          []authenticator.Request{sessionAuthenticator},
 		authorizers:             []Authorizer{groupsAuthorizer},
 	}
 	switch c.SessionSameSite {
