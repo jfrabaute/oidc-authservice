@@ -117,9 +117,11 @@ Applications can then use those headers to identify the user.
 | - | - | - |
 | `USERID_CLAIM` | "email" |Claim whose value will be used as the userid (default `email`). |
 | `GROUPS_CLAIM` | "groups" | Claim whose value will be used as the user's groups (default `groups`) |
-| `USERID_HEADER` | "kubeflow-userid" | Name of the header containing the user-id that will be added to the upstream request. |
+| `USERID_HEADER` | "authservice-userid" | Name of the header containing the user-id that will be added to the upstream request. |
 | `USERID_PREFIX` | "" | Prefix to add to the userid, which will be the value of the `USERID_HEADER`. |
-| `GROUPS_HEADER` | "kubeflow-groups" | Name of the header containing the groups that will be added to the upstream request.
+| `GROUPS_HEADER` | "authservice-groups" | Name of the header containing the groups that will be added to the upstream request.
+| `TOKEN_HEADER` | "Authorization" | Name of the header containing user id token (JWT) that will be added to the upstream request.
+
 
 OIDC AuthService can also perform basic authorization checks. The following
 settings are related to authorization:

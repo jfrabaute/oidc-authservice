@@ -32,8 +32,9 @@ type config struct {
 	AfterLogoutURL       *url.URL `split_words:"true"`
 
 	// Identity Headers
-	UserIDHeader string `split_words:"true" default:"kubeflow-userid" envconfig:"USERID_HEADER"`
-	GroupsHeader string `split_words:"true" default:"kubeflow-groups"`
+	UserIDHeader string `split_words:"true" default:"authservice-userid" envconfig:"USERID_HEADER"`
+	GroupsHeader string `split_words:"true" default:"authservice-groups"`
+	TokenHeader  string `split_words:"true" default:"Authorization"`
 	UserIDPrefix string `split_words:"true" envconfig:"USERID_PREFIX"`
 
 	// IDToken
