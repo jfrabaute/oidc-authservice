@@ -22,7 +22,6 @@ import (
 	"github.com/yosssi/boltstore/store"
 	"golang.org/x/oauth2"
 	fsnotify "gopkg.in/fsnotify/fsnotify.v1"
-	"k8s.io/apiserver/pkg/authentication/authenticator"
 )
 
 // Issue: https://github.com/gorilla/sessions/issues/200
@@ -147,7 +146,7 @@ func main() {
 		oauth2Config:            oauth2Config,
 	}
 
-	// XXX maybe get rid of old groupsAuthorizer
+	// XXX clean this up, maybe get rid of old groupsAuthorizer
 	var groupsAuthorizer Authorizer
 	if c.AuthzConfigPath != "" {
 		log.Infof("AuthzConfig file path=%s", c.AuthzConfigPath)
@@ -227,7 +226,7 @@ func main() {
 		sessionDomain:           c.SessionDomain,
 		authHeader:              c.AuthHeader,
 		caBundle:                caBundle,
-		authenticators:          []authenticator.Request{sessionAuthenticator},
+		authenticators:          []Authenticator{sessionAuthenticator},
 		authorizers:             []Authorizer{groupsAuthorizer},
 	}
 	switch c.SessionSameSite {
