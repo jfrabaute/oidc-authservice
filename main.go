@@ -140,6 +140,7 @@ func main() {
 		store:                   store,
 		cookie:                  userSessionCookie,
 		header:                  c.AuthHeader,
+		tokenHeader:             c.TokenHeader,
 		strictSessionValidation: c.StrictSessionValidation,
 		caBundle:                caBundle,
 		provider:                provider,
