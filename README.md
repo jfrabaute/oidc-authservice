@@ -121,6 +121,7 @@ Applications can then use those headers to identify the user.
 | `USERID_PREFIX` | "" | Prefix to add to the userid, which will be the value of the `USERID_HEADER`. |
 | `GROUPS_HEADER` | "authservice-groups" | Name of the header containing the groups that will be added to the upstream request.
 | `TOKEN_HEADER` | "Authorization" | Name of the header containing user id token (JWT) that will be added to the upstream request.
+| `TOKEN_SCHEME` | "Bearer" | Authorization scheme (e.g. Bearer, Basic) used for user id token. |
 
 
 OIDC AuthService can also perform basic authorization checks. The following
