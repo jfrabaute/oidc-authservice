@@ -34,13 +34,13 @@ type config struct {
 	// Identity Headers
 	UserIDHeader string `split_words:"true" default:"authservice-userid" envconfig:"USERID_HEADER"`
 	GroupsHeader string `split_words:"true" default:"authservice-groups"`
-	TokenHeader  string `split_words:"true" default:"Authorization"`
 	UserIDPrefix string `split_words:"true" envconfig:"USERID_PREFIX"`
 
 	// IDToken
-	UserIDClaim       string `split_words:"true" default:"email" envconfig:"USERID_CLAIM"`
-	UserIDTokenHeader string `split_words:"true" envconfig:"USERID_TOKEN_HEADER"`
-	GroupsClaim       string `split_words:"true" default:"groups"`
+	UserIDClaim string `split_words:"true" default:"email" envconfig:"USERID_CLAIM"`
+	GroupsClaim string `split_words:"true" default:"groups"`
+	TokenHeader string `split_words:"true" default:"Authorization"`
+	TokenScheme string `split_words:"true" default:"Bearer"`
 
 	// Infra
 	Hostname           string `split_words:"true" envconfig:"SERVER_HOSTNAME"`
