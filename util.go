@@ -127,8 +127,13 @@ func getBearerToken(value string) string {
 
 func userInfoToHeaders(user *User, opts *httpHeaderOpts) map[string]string {
 	res := map[string]string{}
-	res[opts.userIDHeader] = opts.userIDPrefix + user.Name
-	res[opts.groupsHeader] = strings.Join(user.Groups, ",")
+
+	if opts.userIDHeader != "" {
+		res[opts.userIDHeader] = opts.userIDPrefix + user.Name
+	}
+	if opts.groupsHeader != "" {
+		res[opts.groupsHeader] = strings.Join(user.Groups, ",")
+	}
 	return res
 }
 
