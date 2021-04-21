@@ -117,10 +117,10 @@ Applications can then use those headers to identify the user.
 | - | - | - |
 | `USERID_CLAIM` | "email" |Claim whose value will be used as the userid (default `email`). |
 | `GROUPS_CLAIM` | "groups" | Claim whose value will be used as the user's groups (default `groups`) |
-| `USERID_HEADER` | "authservice-userid" | Name of the header containing the user-id that will be added to the upstream request. |
+| `USERID_HEADER` | "" | Name of the header containing the user-id to be added to the upstream request. Header omitted if unset |
 | `USERID_PREFIX` | "" | Prefix to add to the userid, which will be the value of the `USERID_HEADER`. |
-| `GROUPS_HEADER` | "authservice-groups" | Name of the header containing the groups that will be added to the upstream request.
-| `TOKEN_HEADER` | "Authorization" | Name of the header containing user id token (JWT) that will be added to the upstream request.
+| `GROUPS_HEADER` | "" | Name of the header containing the groups to be added to the upstream request. Header omitted if unset |
+| `TOKEN_HEADER` | "Authorization" | Name of the header containing user id token (JWT) that will be added to the upstream request. |
 | `TOKEN_SCHEME` | "Bearer" | Authorization scheme (e.g. Bearer, Basic) used for user id token. |
 
 
