@@ -43,7 +43,7 @@ type server struct {
 	strictSessionValidation bool
 	authHeader              string
 	idTokenOpts             jwtClaimOpts
-	upstreamHTTPHeaderOpts  httpHeaderOpts
+	userHeaderHelper        *userHeaderHelper
 	caBundle                []byte
 	sessionSameSite         http.SameSite
 	newState                state.StateFunc
@@ -62,7 +62,35 @@ type httpHeaderOpts struct {
 	userIDHeader string
 	userIDPrefix string
 	groupsHeader string
-	tokenHeader  string
+}
+
+type userHeaderFn func(user *User) string
+
+type userHeaderHelper struct {
+	headers map[string]userHeaderFn
+}
+
+func newUserHeaderHelper(opts httpHeaderOpts) *userHeaderHelper {
+	helper := userHeaderHelper{headers: make(map[string]userHeaderFn)}
+
+	if opts.userIDHeader != "" {
+		helper.headers[opts.userIDHeader] = func(u *User) string {
+			return opts.userIDPrefix + u.Name
+		}
+	}
+
+	if opts.groupsHeader != "" {
+		helper.headers[opts.groupsHeader] = func(u *User) string {
+			return strings.Join(u.Groups, ",")
+		}
+	}
+	return &helper
+}
+
+func (u *userHeaderHelper) AddHeaders(w http.ResponseWriter, user *User) {
+	for header, valueFn := range u.headers {
+		w.Header().Add(header, valueFn(user))
+	}
 }
 
 func (s *server) authenticate(w http.ResponseWriter, r *http.Request) {
@@ -136,9 +164,8 @@ func (s *server) authenticate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	for k, v := range userInfoToHeaders(user, &s.upstreamHTTPHeaderOpts) {
-		w.Header().Set(k, v)
-	}
+	s.userHeaderHelper.AddHeaders(w, user)
+
 	w.WriteHeader(http.StatusOK)
 	return
 }

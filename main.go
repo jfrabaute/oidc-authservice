@@ -218,11 +218,11 @@ func main() {
 			userIDClaim: c.UserIDClaim,
 			groupsClaim: c.GroupsClaim,
 		},
-		upstreamHTTPHeaderOpts: httpHeaderOpts{
+		userHeaderHelper: newUserHeaderHelper(httpHeaderOpts{
 			userIDHeader: c.UserIDHeader,
 			userIDPrefix: c.UserIDPrefix,
 			groupsHeader: c.GroupsHeader,
-		},
+		}),
 		sessionMaxAgeSeconds:    c.SessionMaxAge,
 		strictSessionValidation: c.StrictSessionValidation,
 		sessionDomain:           c.SessionDomain,
