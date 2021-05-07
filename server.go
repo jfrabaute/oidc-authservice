@@ -376,6 +376,7 @@ func readiness(isReady *abool.AtomicBool) http.HandlerFunc {
 // live are in the same cluster and requests pass through the AuthService.
 // Allowing the whitelisted requests before OIDC is configured is necessary for
 // the OIDC discovery request to succeed.
+// TODO fix this stuff to use host instead of just path!
 func whitelistMiddleware(whitelist []string, isReady *abool.AtomicBool) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -395,6 +396,27 @@ func whitelistMiddleware(whitelist []string, isReady *abool.AtomicBool) func(htt
 			}
 			// Server ready, continue.
 			handler.ServeHTTP(w, r)
+		})
+	}
+}
+
+func debugMiddleware(debugURLS []string) func(http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			logger := loggerForRequest(r)
+			// Check if request is a debug url which should continue to next handler
+			reqURL := r.Host + r.URL.Path
+			logger.Debugf("debug middleware: request url=%q", reqURL)
+			for _, prefix := range debugURLS {
+				if strings.HasPrefix(reqURL, prefix) {
+					handler.ServeHTTP(w, r)
+					return
+				}
+			}
+
+			logger.Debugf("URI not in explicit debug list. Accepted without authenticating.")
+			returnMessage(w, http.StatusOK, "OK")
+
 		})
 	}
 }

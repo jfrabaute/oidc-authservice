@@ -59,8 +59,12 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc(path.Join(c.AuthserviceURLPrefix.Path, OIDCCallbackPath), s.callback).Methods(http.MethodGet)
 	router.HandleFunc(path.Join(c.AuthserviceURLPrefix.Path, SessionLogoutPath), s.logout).Methods(http.MethodPost)
-
-	router.PathPrefix("/").Handler(whitelistMiddleware(c.SkipAuthURLs, isReady)(http.HandlerFunc(s.authenticate)))
+	// Setup authentication handler middleware
+	var authenticateHandler http.Handler = whitelistMiddleware(c.SkipAuthURLs, isReady)(http.HandlerFunc(s.authenticate))
+	if len(c.DebugURLs) > 0 {
+		authenticateHandler = debugMiddleware(c.DebugURLs)(authenticateHandler)
+	}
+	router.PathPrefix("/").Handler(authenticateHandler)
 
 	// Start server
 	log.Infof("Starting server at %v:%v", c.Hostname, c.Port)
