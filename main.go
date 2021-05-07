@@ -148,6 +148,11 @@ func main() {
 		oauth2Config:            oauth2Config,
 	}
 
+	gcpAuthenticator, err := newGcpAuthenticator(c.GCPHeader)
+	if err != nil {
+		log.Fatalf("error initializing gcp authenticator")
+	}
+
 	// XXX clean this up, maybe get rid of old groupsAuthorizer
 	var groupsAuthorizer Authorizer
 	if c.AuthzConfigPath != "" {
@@ -228,7 +233,7 @@ func main() {
 		sessionDomain:           c.SessionDomain,
 		authHeader:              c.AuthHeader,
 		caBundle:                caBundle,
-		authenticators:          []Authenticator{sessionAuthenticator},
+		authenticators:          []Authenticator{sessionAuthenticator, gcpAuthenticator},
 		authorizers:             []Authorizer{groupsAuthorizer},
 	}
 	switch c.SessionSameSite {

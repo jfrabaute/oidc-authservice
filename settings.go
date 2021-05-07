@@ -42,6 +42,9 @@ type config struct {
 	TokenHeader string `split_words:"true" default:"Authorization"`
 	TokenScheme string `split_words:"true" default:"Bearer"`
 
+	// GCP Auth
+	GCPHeader string `split_words:"true" default:"Authorization" envconfig:"GCP_HEADER"`
+
 	// Infra
 	Hostname           string `split_words:"true" envconfig:"SERVER_HOSTNAME"`
 	Port               int    `split_words:"true" default:"8080" envconfig:"SERVER_PORT"`
