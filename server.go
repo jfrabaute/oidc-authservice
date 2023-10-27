@@ -31,6 +31,7 @@ var (
 		2: "JWT access token authenticator",
 		3: "session authenticator",
 		4: "idtoken authenticator",
+		5: "jwt from extra provider authenticator",
 	}
 )
 
@@ -51,10 +52,11 @@ type server struct {
 	cacheExpirationMinutes int
 
 	// Authenticators Configurations
-	IDTokenAuthnEnabled     bool
-	KubernetesAuthnEnabled  bool
-	AccessTokenAuthnEnabled bool
-	AccessTokenAuthn        string
+	IDTokenAuthnEnabled         bool
+	KubernetesAuthnEnabled      bool
+	AccessTokenAuthnEnabled     bool
+	AccessTokenAuthn            string
+	JWTFromExtraProviderEnabled bool
 
 	authHeader        string
 	idTokenOpts       common.JWTClaimOpts
@@ -514,6 +516,9 @@ func (s *server) enabledAuthenticator(authenticator string) bool {
 		return true
 	}
 	if authenticator == "idtoken authenticator" && s.IDTokenAuthnEnabled {
+		return true
+	}
+	if authenticator == "jwt from extra provider authenticator" && s.JWTFromExtraProviderEnabled {
 		return true
 	}
 	return false

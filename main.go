@@ -14,6 +14,7 @@ import (
 	"github.com/arrikto/oidc-authservice/authorizer"
 	"github.com/arrikto/oidc-authservice/common"
 	"github.com/arrikto/oidc-authservice/sessions"
+	"k8s.io/utils/strings/slices"
 
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
@@ -188,6 +189,26 @@ func main() {
 		authorizers = append(authorizers, externalAuthorizer)
 	}
 
+	var jwtFromExtraProviderAuthenticator authenticators.Authenticator
+	// Add the jwt extra authentication
+	if c.JWTFromExtraProviderEnabled {
+		if !slices.Contains([]string{"http", "https"}, c.JWTFromExtraProviderProviderURL.Scheme) {
+			log.Fatalf(
+				"Error creating jwt from extra provider authenticator: "+
+					"provider URL is incorrect: %s",
+				c.JWTFromExtraProviderProviderURL.String())
+		}
+		if c.JWTFromExtraProviderHeaderName == "" {
+			log.Fatal("Error creating jwt from extra provider authenticator: header name is empty")
+		}
+
+		jwtFromExtraProviderAuthenticator = authenticators.NewJWTFromExtraProviderAuthenticator(
+			c.JWTFromExtraProviderHeaderName,
+			c.JWTFromExtraProviderIssuer,
+			c.JWTFromExtraProviderIssuerName,
+			c.JWTFromExtraProviderProviderURL.String())
+	}
+
 	// Set the server values.
 	// The isReady atomic variable should protect it from concurrency issues.
 
@@ -217,16 +238,18 @@ func main() {
 		cacheEnabled:           c.CacheEnabled,
 		cacheExpirationMinutes: c.CacheExpirationMinutes,
 
-		IDTokenAuthnEnabled:     c.IDTokenAuthnEnabled,
-		KubernetesAuthnEnabled:  c.KubernetesAuthnEnabled,
-		AccessTokenAuthnEnabled: c.AccessTokenAuthnEnabled,
-		AccessTokenAuthn:        c.AccessTokenAuthn,
+		IDTokenAuthnEnabled:         c.IDTokenAuthnEnabled,
+		KubernetesAuthnEnabled:      c.KubernetesAuthnEnabled,
+		AccessTokenAuthnEnabled:     c.AccessTokenAuthnEnabled,
+		AccessTokenAuthn:            c.AccessTokenAuthn,
+		JWTFromExtraProviderEnabled: c.JWTFromExtraProviderEnabled,
 		authenticators: []authenticators.Authenticator{
 			k8sAuthenticator,
 			opaqueTokenAuthenticator,
 			jwtTokenAuthenticator,
 			sessionAuthenticator,
 			idTokenAuthenticator,
+			jwtFromExtraProviderAuthenticator,
 		},
 		authorizers:    authorizers,
 		tlsCfg:         tlsCfg,

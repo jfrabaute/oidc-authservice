@@ -156,6 +156,19 @@ settings are related to authorization:
 | `GROUPS_ALLOWLIST` | "*" | List of groups that are allowed to pass authorization. By default, all groups are allowed. If you change this option, you may want to include the `system:serviceaccounts` group explicitly, if you need the AuthService to accept ServiceAccountTokens. |
 | `EXTERNAL_AUTHZ_URL` | "" | Use an external authorization service. This option is disabled by default, to enable set the value to the target external authorization service (e.g. `EXTERNAL_AUTHZ_URL=http://authorizer/auth`). If you have enabled this option then for a request to be authorized, **both** the group and the external authorization service will have to allow the request. |
 
+## Extra JWT From Token authentication
+
+This authentication is similar to the JWT auth, except that it will use the JWT in a specific header.
+This auth is disabled by default. Options to enable it:
+
+| Setting | Default | Description |
+| - | - | - |
+| JWTFROMEXTRAPROVIDER_AUTHN_ENABLED | `false` | Set to `true` to enable this auth
+| JWTFROMEXTRAPROVIDER_PROVIDER_URL | "" | Set to the oidc provider url
+| JWTFROMEXTRAPROVIDER_ISSUER | `` | The issuer |
+| JWTFROMEXTRAPROVIDER_ISSUERNAME | `` | The issuer name |
+| JWTFROMEXTRAPROVIDER_HEADER_NAME | "" | Set ot the header name where the JWT is set
+
 ## Usage
 
 OIDC-Authservice is an OIDC Client, which authenticates users with an OIDC Provider and assigns them a session.
