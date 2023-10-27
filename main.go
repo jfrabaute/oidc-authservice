@@ -188,6 +188,20 @@ func main() {
 		authorizers = append(authorizers, externalAuthorizer)
 	}
 
+	var jwtFromExtraProviderAuthenticator authenticators.Authenticator
+	// Add the jwt extra authentication
+	if c.JWTFromExtraProviderEnabled {
+		jwtFromExtraProviderAuthenticator, err = authenticators.NewJWTFromExtraProviderAuthenticator(
+			c.JWTFromExtraProviderHeaderName,
+			c.JWTFromExtraProviderIssuer,
+			c.JWTFromExtraProviderIssuerName,
+			c.JWTFromExtraProviderClientID,
+			c.JWTFromExtraProviderProviderURL)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}
+
 	// Set the server values.
 	// The isReady atomic variable should protect it from concurrency issues.
 
@@ -217,16 +231,18 @@ func main() {
 		cacheEnabled:           c.CacheEnabled,
 		cacheExpirationMinutes: c.CacheExpirationMinutes,
 
-		IDTokenAuthnEnabled:     c.IDTokenAuthnEnabled,
-		KubernetesAuthnEnabled:  c.KubernetesAuthnEnabled,
-		AccessTokenAuthnEnabled: c.AccessTokenAuthnEnabled,
-		AccessTokenAuthn:        c.AccessTokenAuthn,
+		IDTokenAuthnEnabled:         c.IDTokenAuthnEnabled,
+		KubernetesAuthnEnabled:      c.KubernetesAuthnEnabled,
+		AccessTokenAuthnEnabled:     c.AccessTokenAuthnEnabled,
+		AccessTokenAuthn:            c.AccessTokenAuthn,
+		JWTFromExtraProviderEnabled: c.JWTFromExtraProviderEnabled,
 		authenticators: []authenticators.Authenticator{
 			k8sAuthenticator,
 			opaqueTokenAuthenticator,
 			jwtTokenAuthenticator,
 			sessionAuthenticator,
 			idTokenAuthenticator,
+			jwtFromExtraProviderAuthenticator,
 		},
 		authorizers:    authorizers,
 		tlsCfg:         tlsCfg,
