@@ -77,10 +77,16 @@ type Config struct {
 	CacheExpirationMinutes int  `split_words:"true" default:"5" envconfig:"CACHE_EXPIRATION_MINUTES"`
 
 	// Authenticators configurations
-	IDTokenAuthnEnabled     bool   `split_words:"true" default:"true" envconfig:"IDTOKEN_AUTHN_ENABLED"`
-	KubernetesAuthnEnabled  bool   `split_words:"true" default:"true" envconfig:"KUBERNETES_AUTHN_ENABLED"`
-	AccessTokenAuthnEnabled bool   `split_words:"true" default:"true" envconfig:"ACCESS_TOKEN_AUTHN_ENABLED"`
-	AccessTokenAuthn        string `split_words:"true" default:"jwt" envconfig:"ACCESS_TOKEN_AUTHN"`
+	IDTokenAuthnEnabled             bool     `split_words:"true" default:"true" envconfig:"IDTOKEN_AUTHN_ENABLED"`
+	KubernetesAuthnEnabled          bool     `split_words:"true" default:"true" envconfig:"KUBERNETES_AUTHN_ENABLED"`
+	AccessTokenAuthnEnabled         bool     `split_words:"true" default:"true" envconfig:"ACCESS_TOKEN_AUTHN_ENABLED"`
+	AccessTokenAuthn                string   `split_words:"true" default:"jwt" envconfig:"ACCESS_TOKEN_AUTHN"`
+	JWTFromExtraProviderEnabled     bool     `split_words:"true" default:"false" envconfig:"JWTFROMEXTRAPROVIDER_AUTHN_ENABLED"`
+	JWTFromExtraProviderProviderURL *url.URL `default:"" envconfig:"JWTFROMEXTRAPROVIDER_PROVIDER_URL"`
+	JWTFromExtraProviderHeaderName  string   `default:"" envconfig:"JWTFROMEXTRAPROVIDER_HEADER_NAME"`
+	JWTFromExtraProviderIssuer      string   `default:"" envconfig:"JWTFROMEXTRAPROVIDER_ISSUER"`
+	JWTFromExtraProviderIssuerName  string   `default:"" envconfig:"JWTFROMEXTRAPROVIDER_ISSUERNAME"`
+	JWTFromExtraProviderClientID    string   `default:"" envconfig:"JWTFROMEXTRAPROVIDER_CLIENTID"`
 
 	// Authorization
 	GroupsAllowlist  []string `split_words:"true" default:"*"`
